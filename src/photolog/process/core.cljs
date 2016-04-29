@@ -1,9 +1,10 @@
 (ns photolog.process.core
   (:require [clojure.string :refer [join]]
             [cognitect.transit :as transit]
-            [photolog.process.node-deps :refer [resolve-path exec-sync sharp write-file-sync
+            [photolog.process.node-deps :refer [exec-sync file-stat-sync sharp write-file-sync
                                                 path-basename path-extension write-stdout
-                                                file-read-stream file-write-stream]]))
+                                                file-read-stream file-write-stream
+                                                file-exists-sync]]))
 
 (defn exif-data
   ""
@@ -59,7 +60,22 @@
 (defn print-feedback
   ""
   [error info]
-  (if (some? error) (println (str "Image resize error: " error)) (write-stdout ".")))
+  (if (some? error) (println (str "Image resize error: " error)) (write-stdout "*")))
+
+(defn mtime
+  ""
+  [path when-not-exist]
+  (try (-> path file-stat-sync .-mtime .getTime)
+       (catch :default error when-not-exist)))
+
+(defn should-resize?
+  [source-path output-path]
+  (> (mtime source-path) (mtime output-path)))
+
+  ; (let))
+  ; (and (file-exists-sync source-path)
+  ;      (or (not (file-exists-sync output-path))
+  ;          (> (mtime source-path) (mtime output-path)))))
 
 (defn resize
   ""
@@ -67,12 +83,15 @@
   (let [label        (first breakpoint)
         longest-edge (last breakpoint)
         width        (.floor js/Math longest-edge)
-        height       (.floor js/Math (/ (* longest-edge 2) 3))]
-    (try
-      (-> (sharp source-path)
-          (.resize width height)
-          (.toFile (output-path output-dir source-path label) print-feedback))
-      (catch :default error (print-feedback error nil)))))
+        height       (.floor js/Math (/ (* longest-edge 2) 3))
+        output-path  (output-path output-dir source-path label)]
+    (if (should-resize? source-path output-path)
+      (try
+        (-> (sharp source-path)
+            (.resize width height)
+            (.toFile output-path print-feedback))
+        (catch :default error (print-feedback error nil)))
+      (write-stdout "."))))
 
 (defn resize-with-breakpoints!
   ""

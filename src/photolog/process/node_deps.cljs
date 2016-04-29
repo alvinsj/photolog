@@ -4,6 +4,8 @@
 (def write-file-sync (.-writeFileSync (node/require "fs")))
 (def read-file-sync (.-readFileSync (node/require "fs")))
 (def file-exists-sync (.-existsSync (node/require "fs")))
+(def file-stat (.-stat (node/require "fs")))
+(def file-stat-sync (.-statSync (node/require "fs")))
 (def file-read-stream (.-createReadStream (node/require "fs")))
 (def file-write-stream (.-createWriteStream (node/require "fs")))
 
