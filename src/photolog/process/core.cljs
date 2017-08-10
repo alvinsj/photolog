@@ -123,6 +123,7 @@
                  "LensType"         :lens      "Aperture"     :aperture
                  "ISO"              :iso       "Model"        :model
                  "ImageWidth"       :width     "ImageHeight"  :height
+                 "GPSPosition"      :gps-pos   "GPSAltitude"  :gps-altitude
                  "SourceFile"       :file}
         transform-key (fn [kv]
                         (let [new-key (get key-map (first kv))]

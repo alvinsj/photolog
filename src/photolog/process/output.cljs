@@ -23,6 +23,8 @@
               "data-height=\"" (:height image) "\" "
               "data-width=\"" (:width image) "\" "
               "data-height-scale=\"" (:height-scale image) "\" "
+              "data-gps-pos=\"" (.stringify js/JSON (clj->js (:gps-pos image))) "\" "
+              "data-gps-altitude=\"" (:gps-altitude image) "\" "
               "data-sizes='" (.stringify js/JSON (clj->js (:sizes image))) "' "
          "/>"
        "</div>"))
