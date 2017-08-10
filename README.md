@@ -1,6 +1,10 @@
 # photolog
 visual journal. current status: resizes and generates metadata for a directory of images
 
+### dependencies
+
+[exiftool](http://www.sno.phy.queensu.ca/~phil/exiftool/) - propbably available in your system's package manager
+
 ### building
 
 ```npm run process-prod```
@@ -37,7 +41,7 @@ the default properties are _CreateDate, ExposureTime, ScaleFactor35efl, FocalLen
 
 an array of name, width pairs. the default breakpoints are _[["tiny", 200], ["small", 556], ["medium", 804], ["large", 1000]]_
 
-`metadata-format` the format of the output metadata. _transit_, or _html_. defaults to transit
+`metadata-format` the format of the output metadata. _transit_, _html_, or _atom_. defaults to transit
 
 `html-tmpl` the path of the template to be used for html output.
 
@@ -60,3 +64,24 @@ names.
 ```
 node ./process/main.js /path/to/config
 ```
+
+### output
+
+images in `img-src-dir` are symlinked into `img-out-dir`.  images resized relative to `breakpoints` are written to `img-out-dir`.
+
+metadata describing the images is written to `metadata-path`. in addtion to the keys specified in
+`exif-props`, it includes the following keys:
+
+`file-created` file created timestamp
+
+`file-modified` file modified timestamp
+
+`sizes` a list of images derived from `breakpoints`.  `href` and `label` keys for each
+
+`srcset` html srcset attribute value
+
+`height-scale` the height of the image as a multiplier of it's width
+
+`href` the url of the original image prefixed with `href-prefix`
+
+keys are formatted relative to `metatdata-format`. not all keys are present in all formats
